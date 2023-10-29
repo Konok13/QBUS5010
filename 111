@@ -1,0 +1,78 @@
+from dash import Dash, dcc, html, Input, Output
+import pandas as pd
+import plotly.express as px
+
+app = Dash(__name__)
+df = pd.read_csv('#我们的excel.csv')
+
+#dashname
+app.layout = html.Div([
+#建议布局，就做一个单独的功能就行不与其他联动
+    dcc.RadioItems(id=usage,
+    options=['Gaming/AI','Content creator','light users'],
+    value='light users'
+    )
+
+#gpu布局
+    dcc.Dropdown(id='gpu',
+        options=[df['GPU'].unique],
+        'NVIDIA GeForce RTX 4060'
+     ),
+    #cpu布局
+    dcc.Dropdown(
+        id='cpu',
+        options=[df['CPU'].unique],
+        'Intel Core i7-13700KF Processor'
+        multi=False,
+        inline=true)
+    
+    html.Div(id='advice')
+    html.Div(id='gscore')
+    html.Div(id='cscore')
+    hetml.Div(id='oscore')  
+]),
+
+#使用建议
+@app.callback(
+    Output('advice', 'children'), 
+    Input('usage', 'value'))
+def update_advice(selected_usage):
+    if selected_usage == 'Gaming/AI':
+        return 'Focus budget on GPU'
+    elif selected_usage == 'light_users':
+        return 'Latest hardware can satisfy most of the casual works, consider saving your budget for other purposes'
+    elif selected_usage == 'content_creator':
+        return 'Focus budget on CPU'
+#Cpu跑分
+@app.callback(
+    Output('cscore', 'children'), 
+    Input('CPU', 'value'))
+ #cpu跑分数据筛选平均计算
+def cscore_update(selected_cpu):
+   cpu_df = df[df['CPU'] == selected_cpu]
+   scpu_average= cpu_df['CPU score'].mean()
+   #输出形式待定，此处先输出一行文字
+   return f'Average CPU score: {scpu_average}'
+
+#Gpu跑分
+@app.callback(
+    Output('gscore', 'children'), 
+    Input('CPU', 'value'))
+ #gpu跑分数据筛选平均计算
+def gscore_update(selected_cpu):
+   gpu_df = df[df['GPU'] == selected_gpu]
+   sgpu_average = cpu_df['GPU score'].mean()
+   #输出结果形式待定
+   return f'Average CPU score: {sgpu_average}'   
+
+#总体跑分
+@app.callback(
+  Output('oscore', 'children'), 
+   Input[('CPU', 'value'),
+         ('GPU','value')])
+def oscore_update(selected_cpu,selected_gpu)
+   overall_df = df[(df['CPU'] == selected_cpu) & (df['GPU'] == selected_gpu)]
+   soverall_average = overall_df['Overall Score']
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
