@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 app = Dash(__name__)
-df = pd.read_csv('#我们的excel.csv')
+df = pd.read_csv('qbus daft.csv')
 
 #dashname
 app.layout = html.Div([
